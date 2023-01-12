@@ -15,7 +15,7 @@ function binarySearch(arr, num){
     while(start<=end && arr[mid]!==num){
         if (arr[mid]>num) end=mid-1;
         else start=mid+1;
-        //gives the upper bound
+        //gives the lower bound
         mid = Math.floor((end + start)/2);
     }
     return arr[mid]===num?mid:-1;    
