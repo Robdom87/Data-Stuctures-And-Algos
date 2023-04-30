@@ -1,3 +1,9 @@
+// BIG O NOTATION
+// Insertion O(1)
+// remobval O(1) or O(N)
+// Searching or Accessing O(N)
+
+
 //peice of data - val
 //reference to node - next
 class Node {
@@ -49,7 +55,7 @@ class SinglyLinkedList {
     pop() {
         if (!this.head) return undefined;
 
-        let current = this.head;   
+        let current = this.head;
         let newTail = current;
         while (current.next) {
             newTail = current;
@@ -58,15 +64,79 @@ class SinglyLinkedList {
         newTail.next = null;
         this.tail = newTail;
         //edge case if one item
-        if(this.head===this.tail) this.head=this.tail=null;
+        if (this.head === this.tail) this.head = this.tail = null;
         this.length--;
         return current;
+    }
+    //remove node from beginning
+    //if no nnodes return undefined
+    //store currented head property variable
+    //set the head property to be the currrent heads next property
+    shift() {
+        if (!this.head) return undefined;
+        let oldHead = this.head;
+        this.head = oldHead.next;
+        this.length--;
+        //to fix bug that holds a node in this.tail when a 1 length list is shifted
+        if (this.length===0) this.tail = null;
+        return oldHead;
+    }
+    //add new node at the beginning of the linked list
+    //function should accept val
+    //create node
+    //set newling crated node next property to current heafd
+    //set head to newnode
+    unshift(val){
+        let newNode = new Node(val);
+        if (!this.head) {
+            this.tail = this.head = newNode;
+        } else {
+            let oldHead = this.head;
+            newNode.next=oldHead;
+            this.head=newNode;
+        }
+        this.length++;
+        return this;
+    }
+    //retrieve value by its position
+    get(index){
+        if(index<0 || index >= this.length){
+            return null;
+        }
+        let current = this.head;
+        for (let i = 0; i < index; i++){
+            current = current.next;
+        }
+        return current;
+    }
+    reverse(){
+        if(!this.head){
+            return;
+        }
+        let node = this.head;
+        this.head = this.tail;
+        this.tail = node;
+        // console.log(node);
+        // console.log(this.head);
+        // console.log(this.tail);
+        let next;
+        let prev = null;
+        for (let i = 0; i < this.length; i++){
+            next = node.next;
+            node.next = prev;
+            prev = node;
+            node = next;
+        }
+        return this;
+       
     }
 }
 
 //how we want to call it later on
 var list = new SinglyLinkedList();
 list.push("HELLO");
-// list.push("GOODBYE");
-list.pop();
+list.push("GOODBYE");
+list.unshift('new');
+list.reverse();
+// console.log(list.get(0));
 console.log(list);
