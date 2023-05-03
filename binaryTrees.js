@@ -29,6 +29,15 @@ bionary search trees
 BST strutucture
     helps to look things up
     and it helps insert things quickly
+
+
+Big O
+insertion O(log n)
+searching O(log n)
+
+not guaranteed
+
+log 2 of N
 `;
 
 class Node {
@@ -44,20 +53,23 @@ class BinarySearchTree {
         this.root = null;
     }
     insert(value) {
+        // first create new node
         let insertNode = new Node(value);
+        // check if this root is null, and if it is just make it the new node
         if (this.root === null) {
             this.root = insertNode;
             return this;
-
         }
-
         let currentNode = this.root;
         while (true) {
+            //check if value is greater then current node value
             if (value > currentNode.value) {
+                //check if current node right is not null, if it is null, then make ,right node into new node
                 if (currentNode.right === null) {
                     currentNode.right = insertNode;
                     return this;
                 }
+                //if it is not null then change current node to .right node, to move the current marker down the tree
                 currentNode = currentNode.right;
             } else if (value < currentNode.value) {
                 if (currentNode.left === null) {
@@ -70,6 +82,41 @@ class BinarySearchTree {
             }
         }
     }
+    find(value){
+        //first check if there is a root, if no root, not found
+        if(this.root===null){
+            return this;
+        }
+        //then we set the current variable to the rrom and the found flag
+        let current = this.root;
+        let found = false;
+        //if the value to find is the root, then we found it and we are good to go
+        if(value === current.value){
+            found = true;
+        } else {
+            //but if its not lets search in tree
+            while(!found){
+                //depending on the value move right or left
+                if(value > current.value){
+                    current = current.right;
+                }else if (value < current.value){
+                    current = current.left;
+                //if the values match, return found
+                } else if (value === current.value){
+                    found = true;
+                //the only other sition is if != which would be if current value is null
+                } else {
+                    return;
+                }
+            }
+        }  
+        //then return accordingly
+        if(found){
+            return 'Found!'
+        }
+        return 'Not there.'
+
+    }
 }
 
 let tree = new BinarySearchTree;
@@ -78,5 +125,6 @@ tree.insert(23);
 tree.insert(1);
 tree.insert(24);
 tree.insert(1);
-console.log(tree);
+console.log(tree.find(23));
+// console.log(tree);
 
