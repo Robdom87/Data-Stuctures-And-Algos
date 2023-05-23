@@ -117,6 +117,29 @@ class BinarySearchTree {
         return 'Not there.'
 
     }
+    BFS(){
+        let visited = [];
+        let queue = [];
+        if (this.root===null){
+            return visited;
+        }
+        let current = this.root;
+        queue.push(current);
+        for(let i = 0; i < 4; i++){
+        // while(queue.length>0){
+            
+            current=queue.shift()
+            console.log(current);
+            if(current.left){
+                queue.push(current.left);
+            }
+            if(current.right){
+                queue.push(current.right);
+            } 
+            visited.push(current.value);
+        }
+        return visited;     
+    }
 }
 
 let tree = new BinarySearchTree;
@@ -125,6 +148,6 @@ tree.insert(23);
 tree.insert(1);
 tree.insert(24);
 tree.insert(1);
-console.log(tree.find(23));
+console.log(tree.BFS());
 // console.log(tree);
 
