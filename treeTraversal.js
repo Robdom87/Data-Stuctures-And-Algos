@@ -11,4 +11,8 @@ two main approaches
 
 Breadth for search - we want to look at every sobling node befpre we look at a child
 how to implment , use a queue
+
+
+depth first seach
+go down before seeing sibling nodes
 `

@@ -38,6 +38,17 @@ searching O(log n)
 not guaranteed
 
 log 2 of N
+
+DFS vs BFS
+same time complexity
+
+BFS 
+- need a queue to check each node
+- taller tree, than bfs better for space complexity
+
+DFS
+- go all the way down
+- if a wide tree, then better for space complexity to use DFS
 `;
 
 class Node {
@@ -125,8 +136,8 @@ class BinarySearchTree {
         }
         let current = this.root;
         queue.push(current);
-        for(let i = 0; i < 4; i++){
-        // while(queue.length>0){
+        // for(let i = 0; i < queue; i++){
+        while(queue.length>0){
             
             current=queue.shift()
             console.log(current);
@@ -140,6 +151,49 @@ class BinarySearchTree {
         }
         return visited;     
     }
+    DFSpreorder(){
+        //once you get to a node you add it to visited
+        let visited = [];
+        
+        function traverse(node){
+            if(!node){
+                return;
+            }
+            visited.push(node.value);
+            traverse(node.left);
+            traverse(node.right);
+        }
+        traverse(this.root)
+        return visited;
+    }
+    DFSpostorder(){
+        // traverse to tip of branch first then add to data
+        let visited = []; 
+        function traverse(node){
+            if(!node){    
+                return;
+            }  
+            traverse(node.left);
+            traverse(node.right);
+            visited.push(node.value);
+        }
+        traverse(this.root)
+        return visited;
+    }
+    DFSinorder(){
+        //does it in order
+        let visited = [];
+        function traverse(node){
+            if(!node){    
+                return;
+            }  
+            traverse(node.left);
+            visited.push(node.value);
+            traverse(node.right);
+        }
+        traverse(this.root)
+        return visited;
+    }
 }
 
 let tree = new BinarySearchTree;
@@ -148,6 +202,6 @@ tree.insert(23);
 tree.insert(1);
 tree.insert(24);
 tree.insert(1);
-console.log(tree.BFS());
+console.log(tree.DFSinorder());
 // console.log(tree);
 
