@@ -31,6 +31,8 @@ priority queue-
 define - which element has a priority, each elment is serves before elements with lower priorities
 use cases
 implementation
+
+big o log n for insertion and deletion, search 0 n
 `
 
 //heap insert intro
@@ -39,78 +41,89 @@ class MaxBinaryHeap {
     constructor() {
         this.values = [];
     }
-    insert(value){
-        this.values.push(value);
-        function findIndex(value, array){
-            let i = 0
-            for (i ; i < array.length; i++){
-                if(value === array[i]){
-                    break;
-                }
-            }
-            return i;
-        }
-        let index = findIndex(value, this.values);
-        let parentIndex = Math.floor((index - 1)/2);
-        let parent = this.values[parentIndex]
-        while (value > parent){
-            
-            this.values[parentIndex] = value;
-            this.values[index] = parent;
-            index = findIndex(value, this.values);
-            parentIndex = Math.floor((index - 1)/2);
-            parent = this.values[parentIndex]
-
-        }
-
+    insert(element){
+        //add element to end of heap
+        this.values.push(element);
+        this.bubbleUp();   
         return this.values;
     }
-    extractMax(){
-        let extracted = this.values[0];
-        let index = this.values.length - 1;
-        let last = this.values[index];
-        this.values[0]=last;
-        index = 0;
-        this.values.pop();
-        //sink down
-        //swap with largest child
-        while(true){
-            let left = {
-                idx: (2*index) +1,
-                val: null
-            }
-            //make sure the index is in bounds
-            left.val = this.values[left.idx];
-            let right = {
-                idx: (2*index) +2,
-                val: null
-            }
-            right.val = this.values[right.idx];
-            let comparison = Math.max(left.val, right.val);
-            let compareObj = {};
-            if (comparison === left.val){
-                compareObj = left;
-            } else {
-                compareObj = right;
-            }
+    bubbleUp(){
 
-            if(last<compareObj.val){
-                this.values[index] = compareObj.val;
-                this.values[compareObj.idx] = last;
-                index = compareObj.idx; 
-            } else {
-                break;
-            }
-
+        let idx = this.values.length - 1;
+        const element = this.values[idx];
+        //break out of loop if element gets to top of heap
+        while(idx>0){
+            let parentIdx = Math.floor((idx-1)/2);
+            let parent = this.values[parentIdx];
+            //break out of loop if element is less than parent
+            if(element <= parent) break;
+            //if greater than, swap the two values and update element index
+            this.values[parentIdx] = element;
+            this.values[idx]=parent;
+            idx = parentIdx;
         }
-        return extracted;
+    }
+    extractMax(){
+        //pop out last element in heap and push to root
+        //max is kicked out , could be added afterwards tho to get back to top
+        const max = this.values[0];
+        const end = this.values.pop();
+        //only do if values has elements within the heap
+        if(this.values.length > 0) {
+            this.values[0]=end;
+            this.bubbleDown();
+        }
+        return max;
+    }
+    bubbleDown(){
+        let idx = 0;
+        const length = this.values.length;
+        const element = this.values[0];
+
+        while(true){
+            //pull left and right child index
+            let leftChildIdx = 2*idx +1;
+            let rightChildIdx = 2*idx +2;
+            //dont assign index values just yet, may be out of bouncs
+            let leftChild, rightChild;
+            //flag to check if any swaps were made
+            let swap = null;
+            //if inbounds
+            if(leftChildIdx<length){
+                //if so set to value
+                leftChild=this.values[leftChildIdx];
+                //check if value is greater than element
+                if(leftChild > element){
+                    //if so swap
+                    swap = leftChildIdx;
+                }
+            }
+            if(rightChildIdx<length){
+                rightChild=this.values[rightChildIdx];
+                //additional checks requiredd as secondary check
+                //updaye swap if right is bigger than element and there has been no swap yet
+                if((rightChild > element && swap === null) || 
+                    //or if alread swapped, update swap if right is bigger than left
+                    (rightChild > leftChild && swap !== null)    
+                ){
+                    swap = rightChildIdx;
+                } 
+            }
+            //if no swaps break out of loop
+            if(swap===null) break;
+            //otherwise actually swap and update index
+            this.values[idx]=this.values[swap];
+            this.values[swap]=element;
+            idx = swap;
+        }
+        
     }
 
 }
 
 class Node {
-    constructor(value, priority) {
-        this.value = value;
+    constructor(val, priority) {
+        this.val = val;
         this.priority = priority;
     }
 }
@@ -118,73 +131,63 @@ class PriorityQueue {
     constructor() {
         this.values = [];
     }
-    Enqueue(value){
-        this.values.push(value);
-        function findIndex(value, array){
-            let i = 0
-            for (i ; i < array.length; i++){
-                if(value.priority === array[i].priority){
-                    break;
+    enqueue(val, priority){
+        let newNode = new Node(val, priority);
+        this.values.push(newNode);
+        this.bubbleUp();
+
+    }
+    bubbleUp(){
+        let idx = this.values.length - 1;
+        const element = this.values[idx];
+        while(idx>0){
+            let parentIdx = Math.floor((idx-1)/2);
+            let parent = this.values[parentIdx];
+            if(element.priority >= parent.priority) break;
+            this.values[parentIdx] = element;
+            this.values[idx]=parent;
+            idx = parentIdx;
+        }
+    }
+    dequeue(){
+        const min = this.values[0];
+        const end = this.values.pop();
+        if(this.values.length > 0) {
+            this.values[0]=end;
+            this.bubbleDown();
+        }
+        return min;
+    }
+    bubbleDown(){
+        let idx = 0;
+        const length = this.values.length;
+        const element = this.values[0];
+        while(true){
+            let leftChildIdx = 2*idx +1;
+            let rightChildIdx = 2*idx +2;
+            let leftChild, rightChild;
+            let swap = null;
+
+            if(leftChildIdx<length){
+                leftChild=this.values[leftChildIdx];
+                if(leftChild.priority < element.priority){
+                    swap = leftChildIdx;
                 }
             }
-            return i;
-        }
-        let index = findIndex(value, this.values);
-        let parentIndex = Math.floor((index - 1)/2);
-        let parent = this.values[parentIndex]
-        while (value > parent){
-            
-            this.values[parentIndex] = value;
-            this.values[index] = parent;
-            index = findIndex(value, this.values);
-            parentIndex = Math.floor((index - 1)/2);
-            parent = this.values[parentIndex]
-
-        }
-
-        return this.values;
+            if(rightChildIdx<length){
+                rightChild=this.values[rightChildIdx];
+                if((rightChild.priority < element.priority && swap === null) || 
+                    (rightChild.priority > leftChild.priority && swap !== null)    
+                ){
+                    swap = rightChildIdx;
+                } 
+            }
+            if(swap===null) break;
+            this.values[idx]=this.values[swap];
+            this.values[swap]=element;
+            idx = swap;
+        }   
     }
-    Dequeue(){
-        let extracted = this.values[0];
-        let index = this.values.length - 1;
-        let last = this.values[index];
-        this.values[0]=last;
-        index = 0;
-        this.values.pop();
-        //sink down
-        //swap with largest child
-        while(true){
-            let left = {
-                idx: (2*index) +1,
-                val: null
-            }
-            //make sure the index is in bounds
-            left.val = this.values[left.idx];
-            let right = {
-                idx: (2*index) +2,
-                val: null
-            }
-            right.val = this.values[right.idx];
-            let comparison = Math.max(left.val, right.val);
-            let compareObj = {};
-            if (comparison === left.val){
-                compareObj = left;
-            } else {
-                compareObj = right;
-            }
-
-            if(last<compareObj.val){
-                this.values[index] = compareObj.val;
-                this.values[compareObj.idx] = last;
-                index = compareObj.idx; 
-            } else {
-                break;
-            }
-
-        }
-        return extracted;
-    }
-
 }
 
 
@@ -199,4 +202,6 @@ heap.insert(3);
 heap.insert(34);
 heap.extractMax();
 console.log(heap.values);
+
+
 
