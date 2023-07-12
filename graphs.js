@@ -52,6 +52,13 @@ recommendations (find the ones with thre most direct commonality)
 DFS traversal for a graph
 prioritize visit children, deep traversal before widen
 we will do it recursively and iteratively
+
+
+BFS
+visit neighbors at current depth first
+
+Dijkistras Algorrithm
+shortest path alogorithm
 `
 //this will be an undirected graph, and unweighted
 class Graph {
@@ -104,7 +111,43 @@ class Graph {
             })
         })(start);
         return result;
-
+    }
+    //will have different result than recursibve
+    depthFirstIteration(start){   
+        let toVisit = [start];
+        let result = []; 
+        let visited = {};
+        let adjacencyList = this.adjacencyList;
+        visited[start]=true;
+        while(toVisit.length){
+            let vertex = toVisit.pop();
+            result.push(vertex);
+            adjacencyList[vertex].forEach(neighbor =>{
+                if(!visited[neighbor]){
+                    visited[neighbor]=true;
+                    toVisit.push(neighbor);
+                };
+            })
+        }
+        return result;
+    }
+    breadthFirstIteration(start){   
+        let toVisit = [start];
+        let result = []; 
+        let visited = {};
+        let adjacencyList = this.adjacencyList;
+        visited[start]=true;
+        while(toVisit.length){
+            let vertex = toVisit.shift();
+            result.push(vertex);
+            adjacencyList[vertex].forEach(neighbor =>{
+                if(!visited[neighbor]){
+                    visited[neighbor]=true;
+                    toVisit.push(neighbor);
+                };
+            })
+        }
+        return result;
     }
 }
 
@@ -126,7 +169,7 @@ g.addEdge("D","E")
 g.addEdge("D","F")
 g.addEdge("E","F")
 g.depthFirstRecursive("A")
-console.log(g.depthFirstRecursive("A"))
+console.log(g.breadthFirstIteration("A"))
 
 // let newGraph = new Graph;
 // newGraph.addVertex('vertex');
