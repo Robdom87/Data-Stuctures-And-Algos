@@ -39,48 +39,141 @@ and takes up more space
 
 we will be going by the list
 real world data tends to be sparses and or larger graphs
+
+visiting updating/checking each vertix on a graph
+need to specify starting point
+
+uses for traversal
+finding shortest path
+web crawlers
+peer to peer networking
+recommendations (find the ones with thre most direct commonality)
+
+DFS traversal for a graph
+prioritize visit children, deep traversal before widen
+we will do it recursively and iteratively
+
+
+BFS
+visit neighbors at current depth first
+
+Dijkistras Algorrithm
+shortest path alogorithm
 `
 //this will be an undirected graph, and unweighted
 class Graph {
     constructor(){
-        this.adjancencyList = {}
+        this.adjacencyList = {}
     }
     addVertex(name){
-        if(!this.adjancencyList[name]) this.adjancencyList[name]=[];
+        if(!this.adjacencyList[name]) this.adjacencyList[name]=[];
     }
     removeVertex(vert){
-        let connections = this.adjancencyList[vert];
+        let connections = this.adjacencyList[vert];
         for(let i = 0; i < connections.length; i++){
             this.removeEdge(vert, connections[i]);
         }
-        delete this.adjancencyList[vert];
-        return this.adjancencyList;
+        delete this.adjacencyList[vert];
+        return this.adjacencyList;
     }
     addEdge(vert1, vert2){
         //assuming goes in both directions
-        this.adjancencyList[vert1].push(vert2);
-        this.adjancencyList[vert2].push(vert1);
-        return this.adjancencyList;
+        this.adjacencyList[vert1].push(vert2);
+        this.adjacencyList[vert2].push(vert1);
+        return this.adjacencyList;
     }
     removeEdge(vert1, vert2){
         //my solution
-        // this.adjancencyList[vert1].splice(this.adjancencyList[vert1].indexOf(vert2),1);
-        // this.adjancencyList[vert2].splice(this.adjancencyList[vert2].indexOf(vert1),1);
+        // this.adjacencyList[vert1].splice(this.adjacencyList[vert1].indexOf(vert2),1);
+        // this.adjacencyList[vert2].splice(this.adjacencyList[vert2].indexOf(vert1),1);
 
         //solution from vide
-        this.adjancencyList[vert1] = this.adjancencyList[vert1].filter(
+        this.adjacencyList[vert1] = this.adjacencyList[vert1].filter(
             v => v !== vert2
         );
-        this.adjancencyList[vert2] = this.adjancencyList[vert2].filter(
+        this.adjacencyList[vert2] = this.adjacencyList[vert2].filter(
             v => v !== vert1
         );
-        return this.adjancencyList;
+        return this.adjacencyList;
+    }
+    depthFirstRecursive(start){   
+        let result = []; 
+        let visited = {};
+        let adjacencyList = this.adjacencyList;
+        (function dfs(vertex){
+            if(!vertex) return null;
+            visited[vertex]=true;
+            result.push(vertex);
+            adjacencyList[vertex].forEach(neighbor =>{
+                if(!visited[neighbor]){
+                    return dfs(neighbor);
+                };
+            })
+        })(start);
+        return result;
+    }
+    //will have different result than recursibve
+    depthFirstIteration(start){   
+        let toVisit = [start];
+        let result = []; 
+        let visited = {};
+        let adjacencyList = this.adjacencyList;
+        visited[start]=true;
+        while(toVisit.length){
+            let vertex = toVisit.pop();
+            result.push(vertex);
+            adjacencyList[vertex].forEach(neighbor =>{
+                if(!visited[neighbor]){
+                    visited[neighbor]=true;
+                    toVisit.push(neighbor);
+                };
+            })
+        }
+        return result;
+    }
+    breadthFirstIteration(start){   
+        let toVisit = [start];
+        let result = []; 
+        let visited = {};
+        let adjacencyList = this.adjacencyList;
+        visited[start]=true;
+        while(toVisit.length){
+            let vertex = toVisit.shift();
+            result.push(vertex);
+            adjacencyList[vertex].forEach(neighbor =>{
+                if(!visited[neighbor]){
+                    visited[neighbor]=true;
+                    toVisit.push(neighbor);
+                };
+            })
+        }
+        return result;
     }
 }
 
-let newGraph = new Graph;
-newGraph.addVertex('vertex');
-newGraph.addVertex('vertex2')
-newGraph.addVertex('vertex3');
-newGraph.addEdge('vertex', 'vertex2');
-console.log(newGraph.removeVertex('vertex'));
+let g = new Graph();
+
+g.addVertex("A")
+g.addVertex("B")
+g.addVertex("C")
+g.addVertex("D")
+g.addVertex("E")
+g.addVertex("F")
+
+
+g.addEdge("A", "B")
+g.addEdge("A", "C")
+g.addEdge("B","D")
+g.addEdge("C","E")
+g.addEdge("D","E")
+g.addEdge("D","F")
+g.addEdge("E","F")
+g.depthFirstRecursive("A")
+console.log(g.breadthFirstIteration("A"))
+
+// let newGraph = new Graph;
+// newGraph.addVertex('vertex');
+// newGraph.addVertex('vertex2')
+// newGraph.addVertex('vertex3');
+// newGraph.addEdge('vertex', 'vertex2');
+// console.log(newGraph.removeVertex('vertex'));
